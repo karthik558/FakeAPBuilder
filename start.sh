@@ -20,6 +20,10 @@ else
    sleep 2
 fi
 
+# Install MDK3 to run this tool
+
+sudo apt install mdk3
+
 # Check if packet injection is working or not on interface 0/1
 echo "Select the correct interface to test packet-injection ! (0/1)"
 read -r answer
