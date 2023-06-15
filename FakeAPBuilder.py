@@ -1,4 +1,5 @@
 import os
+import time
 
 # Colors for the terminal
 RED = '\033[0;31m'
@@ -81,7 +82,7 @@ else:
 
 # With the help of the following code, we can create a fake access point
 print(f'{YELLOW}Creating a fake access point with the previously tested wireless adapter : {adapter}{NC}')
-os.system(f"mdk3 {interface} b -c 1 -f random___strings.lst")
+os.system(f"mdk3 {adapter} b -c 1 -f random___strings.lst")
 
 # Press enter to exit
 print(f"{GREEN}Press enter to exit{NC}")
