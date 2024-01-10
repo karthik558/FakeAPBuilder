@@ -47,7 +47,7 @@ def display_banner():
 display_banner()
 
 # Terminal header settings and information
-logger.info(f"{RED}Developer    :   KARTHIK LAL (https://karthiklal.live){NC}")
+logger.info(f"{RED}Developer    :   KARTHIK LAL (https://karthiklal.in){NC}")
 logger.info(f"{RED}Created Date :   2021-12-07{NC}")
 logger.info(f"{RED}Project      :   FakeAPBuilder{NC}")
 logger.info(f"{RED}Purpose      :   To create a fake access point for penetration testing{NC}")
