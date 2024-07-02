@@ -58,7 +58,7 @@ parser = argparse.ArgumentParser(description='FakeAPBuilder: A Python script to 
 parser.add_argument('-a', '--adapter', type=str, default='wlan0', help='The name of the wireless adapter to use (default: wlan0)')
 parser.add_argument('-n', '--name', type=str, default=None, help='The name of the fake access point to create (default: random)')
 parser.add_argument('-c', '--channel', type=int, default=1, help='The channel of the fake access point to use (default: 1)')
-parser.add_argument('-f', '--file', type=str, default='random___strings.lst', help='The file containing the ESSID list for the fake access point (default: random___strings.lst)')
+parser.add_argument('-f', '--file', type=str, default=None, help='The file containing the ESSID list for the fake access point (default: random___strings.lst)')
 args = parser.parse_args()
 
 # Abort the script if the user is not root
@@ -94,8 +94,8 @@ logger.info(f'{YELLOW}Checking if the wireless adapter is compatible with packet
 output = subprocess.check_output(['iwconfig'])
 logger.info(f'Available wireless adapters:\n{output.decode()}')
 
-# Prompt user to select a wireless adapter
-adapter = input(f'Enter the name of the wireless adapter to test (default: {args.adapter}): ') or args.adapter
+# Use the adapter specified in arguments
+adapter = args.adapter
 
 # Test packet-injection on the selected adapter
 logger.info(f'{RED}Starting the injection test on {adapter}...{NC}')
@@ -111,16 +111,17 @@ if result.returncode == 0:
 else:
     logger.error(f'{RED}Packet injection test failed on {adapter}.{NC}')
 
-# Check if the file containing the ESSID list exists and is readable
-logger.info(f'{YELLOW}Checking if the file {args.file} exists and is readable{NC}')
-if os.path.isfile(args.file) and os.access(args.file, os.R_OK):
-    logger.info(f'{GREEN}The file {args.file} is valid{NC}')
-else:
-    logger.error(f'{RED}The file {args.file} is missing or not readable{NC}')
-    exit()
+# Check if the file containing the ESSID list exists and is readable if specified
+if args.file:
+    logger.info(f'{YELLOW}Checking if the file {args.file} exists and is readable{NC}')
+    if os.path.isfile(args.file) and os.access(args.file, os.R_OK):
+        logger.info(f'{GREEN}The file {args.file} is valid{NC}')
+    else:
+        logger.error(f'{RED}The file {args.file} is missing or not readable{NC}')
+        exit()
 
-# Generate a random name for the fake access point if the user does not specify one
-if args.name is None:
+# Generate a random name for the fake access point if the user does not specify one and no file is provided
+if not args.name and not args.file:
     logger.info(f'{YELLOW}Generating a random name for the fake access point{NC}')
     names = ['Free WiFi', 'FBI Surveillance Van', 'Virus Detected', 'Loading...', 'Hidden Network', 'Skynet']
     args.name = random.choice(names)
@@ -142,14 +143,14 @@ signal.signal(signal.SIGTERM, signal_handler)
 # Create a fake access point based on user input
 logger.info(f'{YELLOW}Creating a fake access point with the previously tested wireless adapter : {adapter}{NC}')
 
-# If a single SSID name is specified
-if args.name:
-    logger.info(f'{YELLOW}Using single SSID: {args.name}{NC}')
-    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-n', args.name], check=True)
-else:
-    # If a file containing ESSID list is specified
+# If a file containing ESSID list is specified
+if args.file:
     logger.info(f'{YELLOW}Using ESSID list from file: {args.file}{NC}')
     subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-f', args.file], check=True)
+else:
+    # If a single SSID name is specified
+    logger.info(f'{YELLOW}Using single SSID: {args.name}{NC}')
+    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-n', args.name], check=True)
 
 # Press enter to exit
 input(f"{GREEN}Press enter to exit{NC}")
