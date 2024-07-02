@@ -146,11 +146,15 @@ logger.info(f'{YELLOW}Creating a fake access point with the previously tested wi
 # If a file containing ESSID list is specified
 if args.file:
     logger.info(f'{YELLOW}Using ESSID list from file: {args.file}{NC}')
-    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-f', args.file], check=True)
+    command = ['mdk4', adapter, 'b', '-c', str(args.channel), '-f', args.file]
+    logger.info(f'Running command: {" ".join(command)}')
+    subprocess.run(command, check=True)
 else:
     # If a single SSID name is specified
     logger.info(f'{YELLOW}Using single SSID: {args.name}{NC}')
-    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-n', args.name], check=True)
+    command = ['mdk4', adapter, 'b', '-c', str(args.channel), '-n', args.name]
+    logger.info(f'Running command: {" ".join(command)}')
+    subprocess.run(command, check=True)
 
 # Press enter to exit
 input(f"{GREEN}Press enter to exit{NC}")
