@@ -34,7 +34,6 @@ logger.addHandler(sh)
 
 # Let's start the script with a banner
 def display_banner():
-    
     banner =  "#########::::'## ::::'##:::'##:'########::::'###::::'########::\n"
     banner += "##.....::::'## ##::: ##::'##:: ##.....::::'## ##::: ##.... ##:\n"
     banner += "##::::::::'##:. ##:: ##:'##::: ##::::::::'##:. ##:: ##:::: ##:\n"
@@ -73,19 +72,19 @@ else:
     time.sleep(1)
     os.system("clear")
 
-# Install mdk3 if it is not installed
-logger.info(f"{YELLOW}Checking if mdk3 is installed or not{NC}")
+# Install mdk4 if it is not installed
+logger.info(f"{YELLOW}Checking if mdk4 is installed or not{NC}")
 try:
-    subprocess.run(['which', 'mdk3'], check=True)
-    logger.info(f"{GREEN}mdk3 is installed{NC}")
+    subprocess.run(['which', 'mdk4'], check=True)
+    logger.info(f"{GREEN}mdk4 is installed{NC}")
     time.sleep(1)
 except subprocess.CalledProcessError:
-    logger.warning(f"{RED}mdk3 is not installed{NC}")
+    logger.warning(f"{RED}mdk4 is not installed{NC}")
     time.sleep(1)
-    logger.info(f"{YELLOW}Installing mdk3{NC}")
-    subprocess.run(['apt-get', 'install', 'mdk3', '-y'], check=True)
+    logger.info(f"{YELLOW}Installing mdk4{NC}")
+    subprocess.run(['apt-get', 'install', 'mdk4', '-y'], check=True)
     time.sleep(1)
-    logger.info(f"{GREEN}mdk3 is installed{NC}")
+    logger.info(f"{GREEN}mdk4 is installed{NC}")
     time.sleep(1)
     
 # Check if the wireless adapter is compatible with packet injection or not
@@ -140,9 +139,17 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# With the help of the following code, we can create a fake access point
+# Create a fake access point based on user input
 logger.info(f'{YELLOW}Creating a fake access point with the previously tested wireless adapter : {adapter}{NC}')
-subprocess.run(['mdk3', adapter, 'b', '-c', str(args.channel), '-f', args.file, '-n', args.name], check=True)
+
+# If a single SSID name is specified
+if args.name:
+    logger.info(f'{YELLOW}Using single SSID: {args.name}{NC}')
+    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-n', args.name], check=True)
+else:
+    # If a file containing ESSID list is specified
+    logger.info(f'{YELLOW}Using ESSID list from file: {args.file}{NC}')
+    subprocess.run(['mdk4', adapter, 'b', '-c', str(args.channel), '-f', args.file], check=True)
 
 # Press enter to exit
 input(f"{GREEN}Press enter to exit{NC}")
